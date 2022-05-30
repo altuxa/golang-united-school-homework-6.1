@@ -1,6 +1,8 @@
 package golang_united_school_homework
 
-import "errors"
+import (
+	"errors"
+)
 
 // box contains list of shapes and able to perform operations on them
 type box struct {
@@ -28,7 +30,7 @@ func (b *box) AddShape(shape Shape) error {
 // GetByIndex allows getting shape by index
 // whether shape by index doesn't exist or index went out of the range, then it returns an error
 func (b *box) GetByIndex(i int) (Shape, error) {
-	if i > b.shapesCapacity {
+	if i >= b.shapesCapacity {
 		return nil, errors.New("index out of range")
 	}
 	if b.shapes[i] == nil {
@@ -40,21 +42,21 @@ func (b *box) GetByIndex(i int) (Shape, error) {
 // ExtractByIndex allows getting shape by index and removes this shape from the list.
 // whether shape by index doesn't exist or index went out of the range, then it returns an error
 func (b *box) ExtractByIndex(i int) (Shape, error) {
-	if i > b.shapesCapacity {
+	if i >= b.shapesCapacity {
 		return nil, errors.New("index out of range")
 	}
 	if b.shapes[i] == nil {
 		return nil, errors.New("whether shape by index doesn't exist")
 	}
 	shape := b.shapes[i]
-	b.shapes[i] = nil
+	b.shapes = append(b.shapes[:i], b.shapes[i+1:]...)
 	return shape, nil
 }
 
 // ReplaceByIndex allows replacing shape by index and returns removed shape.
 // whether shape by index doesn't exist or index went out of the range, then it returns an error
 func (b *box) ReplaceByIndex(i int, shape Shape) (Shape, error) {
-	if i > b.shapesCapacity {
+	if i >= b.shapesCapacity {
 		return nil, errors.New("index out of range")
 	}
 	if b.shapes[i] == nil {
@@ -90,11 +92,11 @@ func (b *box) RemoveAllCircles() error {
 	if len(b.shapes) == 0 {
 		return errors.New("empty list")
 	}
-	for i := 0; i < len(b.shapes); i++ {
-		_, ok := b.shapes[i].(Circle)
+	for i := len(b.shapes) - 1; i >= 0; i-- {
+		_, ok := b.shapes[i].(*Circle)
 		if ok {
 			isCircle = true
-			b.shapes[i] = nil
+			b.shapes = append(b.shapes[:i], b.shapes[i+1:]...)
 		}
 	}
 	if !isCircle {
